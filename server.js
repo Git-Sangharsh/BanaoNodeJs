@@ -48,7 +48,20 @@ app.post("/register", async (req, res) => {
     const checkUserExist = await registerModel.findOne({
       registerEmail: bodyRegisterEmail,
     });
-    
+    if (checkUserExist) {
+      res.send(200).json({ userExist: "user already exist" });
+    } else {
+      const addRegister = await registerModel.create({
+        registerEmail: bodyRegisterEmail,
+        registerPassword: bodyRegisterPassword,
+      });
+      res
+        .status(200)
+        .json({
+          registerStatus: "user Register SuccessFully",
+          registerInfo: addRegister,
+        });
+    }
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "error Found on register " });
