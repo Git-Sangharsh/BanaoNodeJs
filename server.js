@@ -74,11 +74,18 @@ app.post("/login", async (req, res) => {
     const userExist = await registerModel.findOne({
       registerEmail: bodyLoginEmail,
     });
+    if(userExist && userExist.registerPassword === bodyLoginPassword) {
+        res.status(200).json({loginStatus: "success", loginInfo: userExist})
+    } else{
+        res.status(400).json({loginStatus: "wrong email or password"});
+    }
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "error Found on Login " });
   }
 });
+
+
 
 app.listen(port, () => {
   console.log(`server is live on port ${port}`);
