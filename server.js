@@ -5,8 +5,10 @@ import { config as dotenvConfig } from "dotenv";
 import mongoose from "mongoose";
 
 const app = express();
-const port = 5000;
+app.use(cors());
+app.use(bodyParser.json());
 dotenvConfig();
+const port = 5000;
 
 //! env variables
 const envUserName = process.env.MONGODB_USERNAME;
@@ -41,7 +43,12 @@ app.get("/", (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
+  const { bodyRegisterEmail, bodyRegisterPassword } = req.body;
   try {
+    const checkUserExist = await registerModel.findOne({
+      registerEmail: bodyRegisterEmail,
+    });
+    
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "error Found on register " });
