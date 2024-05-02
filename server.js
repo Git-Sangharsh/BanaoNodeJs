@@ -74,10 +74,10 @@ app.post("/login", async (req, res) => {
     const userExist = await registerModel.findOne({
       registerEmail: bodyLoginEmail,
     });
-    if(userExist && userExist.registerPassword === bodyLoginPassword) {
-        res.status(200).json({loginStatus: "success", loginInfo: userExist})
-    } else{
-        res.status(400).json({loginStatus: "wrong email or password"});
+    if (userExist && userExist.registerPassword === bodyLoginPassword) {
+      res.status(200).json({ loginStatus: "success", loginInfo: userExist });
+    } else {
+      res.status(400).json({ loginStatus: "wrong email or password" });
     }
   } catch (err) {
     console.log(err);
@@ -85,6 +85,29 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.post("/forget-password", async (req, res) => {
+    const { bodyLoginEmail, bodyPreviousPassword, bodyNewPassword } = req.body;
+    try {
+      const userValid = await registerModel.findOne({ registerEmail: bodyLoginEmail });
+      if (!userValid) {
+        return res.status(400).json({ error: "User not found" });
+      }
+
+      if (userValid.registerPassword !== bodyPreviousPassword) {
+        return res.status(400).json({ error: "Previous password is incorrect" });
+      }
+
+      // Update the password with the new password
+      userValid.registerPassword = bodyNewPassword;
+      await userValid.save();
+
+      // Send a success response
+      res.status(200).json({ message: "Password changed successfully", userInfo: userValid });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Error occurred while changing password" });
+    }
+  });
 
 
 app.listen(port, () => {
