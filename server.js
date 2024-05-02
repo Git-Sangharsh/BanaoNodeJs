@@ -42,6 +42,7 @@ app.get("/", (req, res) => {
   res.send("<h1>This Shit Is working</h1>");
 });
 
+//! Register Endpoint
 app.post("/register", async (req, res) => {
   const { bodyRegisterEmail, bodyRegisterPassword } = req.body;
   try {
@@ -49,22 +50,33 @@ app.post("/register", async (req, res) => {
       registerEmail: bodyRegisterEmail,
     });
     if (checkUserExist) {
-      res.send(200).json({ userExist: "user already exist" });
+      return res.status(400).json({ userExist: "User already exists" });
     } else {
       const addRegister = await registerModel.create({
         registerEmail: bodyRegisterEmail,
         registerPassword: bodyRegisterPassword,
       });
-      res
-        .status(200)
-        .json({
-          registerStatus: "user Register SuccessFully",
-          registerInfo: addRegister,
-        });
+      res.status(200).json({
+        registerStatus: "user Register SuccessFully",
+        registerInfo: addRegister,
+      });
     }
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "error Found on register " });
+  }
+});
+
+//! Login Endpoint
+app.post("/login", async (req, res) => {
+  const { bodyLoginEmail, bodyLoginPassword } = req.body;
+  try {
+    const userExist = await registerModel.findOne({
+      registerEmail: bodyLoginEmail,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "error Found on Login " });
   }
 });
 
